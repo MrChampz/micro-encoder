@@ -5,7 +5,6 @@ import (
 	"encoder/domain"
 	"encoder/framework/queue"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -81,7 +80,10 @@ func (manager *JobManager) Start(channel *amqp.Channel) {
 }
 
 func (manager *JobManager) notifySuccess(jobResult JobWorkerResult, channel *amqp.Channel) error {
+	Mutex.Lock()
 	jobJson, err := json.Marshal(jobResult.Job)
+	Mutex.Unlock()
+
 	if err != nil {
 		return err
 	}
@@ -101,9 +103,15 @@ func (manager *JobManager) notifySuccess(jobResult JobWorkerResult, channel *amq
 
 func (manager *JobManager) checkParseErrors(jobResult JobWorkerResult) error {
 	if jobResult.Job.ID != "" {
-		log.Printf("MessageID " + fmt.Sprint(jobResult.Message.DeliveryTag) + ". Error parsing job " + jobResult.Job.ID + ".")
+		log.Printf(
+			"MessageID: %v. Error during the job: %v, with video: %v. Error: %v.",
+			jobResult.Message.DeliveryTag, jobResult.Job.ID, jobResult.Job.Video.ID, jobResult.Error.Error(),
+		)
 	} else {
-		log.Printf("MessageID " + fmt.Sprint(jobResult.Message.DeliveryTag) + ". Error parsing message " + jobResult.Error.Error() + ".")
+		log.Printf(
+			"MessageID: %v. Error parsing message: %v.",
+			jobResult.Message.DeliveryTag, jobResult.Error.Error(),
+		)
 	}
 
 	jobError := JobNotificationError{

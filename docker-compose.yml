@@ -3,6 +3,7 @@ services:
 
   app:
     build: .
+    privileged: true
     volumes:
       - ./encoder:/go/src/
 

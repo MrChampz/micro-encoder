@@ -31,6 +31,13 @@ RUN apk add --update --upgrade curl python unzip bash gcc g++ scons && \
     cp -R ${BENTO4_PATH}/Source/Python/utils ${BENTO4_PATH}/utils && \
     cp -a ${BENTO4_PATH}/Source/Python/wrappers/. ${BENTO4_PATH}/bin
 
+# Setup NTP for AWS time sync
+RUN echo "server 0.amazon.pool.ntp.org iburst" >> /etc/ntp.conf && \
+    echo "server 1.amazon.pool.ntp.org iburst" >> /etc/ntp.conf && \
+    echo "server 2.amazon.pool.ntp.org iburst" >> /etc/ntp.conf && \
+    echo "server 3.amazon.pool.ntp.org iburst" >> /etc/ntp.conf && \
+    ntpd
+
 WORKDIR /go/src
 
 ENTRYPOINT [ "top" ]

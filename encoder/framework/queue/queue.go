@@ -108,6 +108,6 @@ func (r *RabbitMQ) Notify(
 
 func failOnError(err error, message string) {
 	if err != nil {
-		log.Fatalf("#{message}: #{err}")
+		log.Fatalf(message + ": " + err.Error())
 	}
 }
