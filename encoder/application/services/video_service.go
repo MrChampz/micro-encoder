@@ -23,6 +23,16 @@ func NewVideoService() VideoService {
 	return VideoService{}
 }
 
+func (service *VideoService) InsertVideo() error {
+	_, err := service.VideoRepository.Insert(service.Video)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (service *VideoService) Download(bucketName string) error {
 	ctx := context.Background()
 
